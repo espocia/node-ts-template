@@ -46,10 +46,11 @@ npm run db:init
 
 ### 5. Initialize the schema
 
-Load the initial table schema and seed data:
+Source your `.env` then use `psql` directly:
 
 ```bash
-docker exec -i $(docker compose ps -q db) psql -U root -d postgres < src/db/initialize_table.sql
+export $(grep -v '^#' .env | xargs)
+psql -f src/db/initialize_table.sql
 ```
 
 ## Running
