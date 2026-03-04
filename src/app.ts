@@ -2,7 +2,8 @@ import dotenv from 'dotenv';
 import express from 'express';
 import { Request, Response } from 'express';
 
-import { TypedRequest } from './types/global/express.types.js';
+import client from './lib/postgres';
+import { TypedRequest } from './types/global/express.types';
 
 dotenv.config();
 const app = express();
@@ -10,14 +11,6 @@ const app = express();
 app.use(express.json());
 
 type CreateUserBody = { name: string; email: string };
-
-app.get('/hello', (req: Request, res: Response) => {
-  res.status(200).json({
-    message: 'hello world',
-    time: new Date().toISOString(),
-    items: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-  });
-});
 
 app.post('/user', (req: TypedRequest<{ body: CreateUserBody }>, res: Response) => {
   const { name, email } = req.body;
@@ -31,6 +24,19 @@ app.post('/user', (req: TypedRequest<{ body: CreateUserBody }>, res: Response) =
     createdAt: new Date(),
   };
   return res.status(201).json(user);
+});
+
+app.get('/users', async (req: Request, res: Response) => {
+  const result = await client.rawQuery('SELECT * from users');
+  res.send(result);
+});
+
+app.get('/users/:id', async (req: TypedRequest<{ params: { id: string } }>, res: Response) => {
+  const {
+    params: { id },
+  } = req;
+  const result = await client.rawQuery('SELECT * from users WHERE id = $1', [id]);
+  res.send(result);
 });
 
 app.listen(3000, () => {

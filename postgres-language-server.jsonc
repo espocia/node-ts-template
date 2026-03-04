@@ -1,0 +1,12 @@
+{
+  "$schema": "https://pg-language-server.com/0.21.0/schema.json",
+  "db": {
+    "host": "localhost",
+    "port": 5432,
+    "username": "root",
+    "password": "root",
+    "database": "postgres",
+    "connTimeoutSecs": 10,
+    "allowStatementExecutionsAgainst": ["localhost/*"]
+  }
+}
